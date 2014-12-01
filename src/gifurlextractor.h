@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QUrl>
 
+class QWebFrame;
 class Site;
 class GifUrlExtractor : public QObject
 {
@@ -16,12 +17,15 @@ public:
 signals:
     void urlsReady(const QList<QString>& urls);
 
+private slots:
+    void onPageLoaded(bool load);
+
 private:
     explicit GifUrlExtractor(QObject *parent = 0);
-    void extract();
 
 private:
     QUrl m_url;
+    QWebFrame* m_webFrame;
 };
 
 #endif // GIFURLEXTRACTOR_H
