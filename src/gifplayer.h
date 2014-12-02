@@ -2,6 +2,7 @@
 #define GIFPLAYER_H
 
 #include <QLabel>
+#include <QMovie>
 
 class GifPlayerPrivate;
 class GifPlayer : public QLabel
@@ -25,6 +26,7 @@ protected:
 
 private slots:
     void onMovieStarted();
+    void onMovieStateChanged(QMovie::MovieState state);
 
 private:
     GifPlayerPrivate* d_ptr;

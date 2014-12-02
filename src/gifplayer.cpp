@@ -5,18 +5,24 @@
 #include <QPainter>
 #include <QToolButton>
 
+#include <QProgressIndicator.h>
+
 static const QSize ButtonSize(40,40);
+static const QSize IndicatorSize(60,60);
 class GifPlayerPrivate
 {
 public:
-    GifPlayerPrivate(): movie(nullptr), isPlaying(true),
+    GifPlayerPrivate(): movie(nullptr), isPlaying(true), pgsIndicator(nullptr),
         deleteButton(nullptr), playButton(nullptr) {}
 
     void drawMask(QPainter* painter);
     void layoutButtons();
+    void layoutPgsIndicator();
+    void deletePgsIndicator();
 
     GifPlayer* q_ptr;
     QMovie* movie;
+    QProgressIndicator* pgsIndicator;
 
     QToolButton* deleteButton;
     QToolButton* playButton;
@@ -74,11 +80,37 @@ void GifPlayerPrivate::layoutButtons()
     }
 }
 
+void GifPlayerPrivate::layoutPgsIndicator()
+{
+    if (QFile::exists(movie->fileName()))
+        return;
+
+    if (!pgsIndicator) {
+        pgsIndicator = new QProgressIndicator(q_ptr);
+        pgsIndicator->setFixedSize(IndicatorSize);
+    }
+
+    QPoint movePot(q_ptr->rect().center().x() - pgsIndicator->width() / 2,
+                   q_ptr->rect().center().y() - pgsIndicator->height() / 2);
+    pgsIndicator->move(movePot);
+    pgsIndicator->startAnimation();
+}
+
+void GifPlayerPrivate::deletePgsIndicator()
+{
+    if (pgsIndicator) {
+        delete pgsIndicator;
+        pgsIndicator = nullptr;
+    }
+
+}
+
 GifPlayer::GifPlayer(QWidget *parent) :
     QLabel(parent)
 {
     d_ptr = new GifPlayerPrivate;
     d_ptr->q_ptr = this;
+    setContentsMargins(0, 0, 0, 0);
 }
 
 GifPlayer::~GifPlayer()
@@ -88,6 +120,11 @@ GifPlayer::~GifPlayer()
 
 void GifPlayer::play(const QString &file)
 {
+    if (QFile::exists(file))
+        d_ptr->deletePgsIndicator();
+    else
+        d_ptr->layoutPgsIndicator();
+
     if (d_ptr->movie == nullptr) {
         d_ptr->movie = new QMovie(this);
         connect(d_ptr->movie, SIGNAL(started()), this, SLOT(onMovieStarted()));
@@ -99,20 +136,24 @@ void GifPlayer::play(const QString &file)
 
 void GifPlayer::play()
 {
-    d_ptr->isPlaying = true;
-    d_ptr->movie->setPaused(false);
-    d_ptr->layoutButtons();
-    update();
+    if (d_ptr->movie) {
+        d_ptr->isPlaying = true;
+        d_ptr->movie->setPaused(false);
+        d_ptr->layoutButtons();
+        update();
+    }
 }
 
 void GifPlayer::pause()
 {
-    d_ptr->movie->setPaused(true);
+    if (d_ptr->movie)
+        d_ptr->movie->setPaused(true);
 }
 
 void GifPlayer::stop()
 {
-    d_ptr->movie->stop();
+    if (d_ptr->movie)
+        d_ptr->movie->stop();
 }
 
 void GifPlayer::mousePressEvent(QMouseEvent *ev)
@@ -147,10 +188,18 @@ void GifPlayer::paintEvent(QPaintEvent *e)
 void GifPlayer::resizeEvent(QResizeEvent *)
 {
     d_ptr->layoutButtons();
+    d_ptr->layoutPgsIndicator();
 }
 
 void GifPlayer::onMovieStarted()
 {
     if (d_ptr->movie->scaledSize().isValid())
         setFixedSize(d_ptr->movie->scaledSize());
+}
+
+void GifPlayer::onMovieStateChanged(QMovie::MovieState state)
+{
+    if (state == QMovie::Running)
+        d_ptr->deletePgsIndicator();
+
 }

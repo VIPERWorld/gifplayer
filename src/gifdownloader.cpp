@@ -44,6 +44,8 @@ void GifDownloader::fileDownloaded(QNetworkReply* pReply)
         return;
     }
 
+    qDebug() << __FUNCTION__ << "finished loading. ";
+
     saveFile.write(m_downloadedData);
     saveFile.close();
     emit downloaded();

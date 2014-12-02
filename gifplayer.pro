@@ -5,6 +5,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = gifplayer
 TEMPLATE = app
 
+include(3dparty/miscellaneous/miscellaneous.pri)
 
 SOURCES += src/main.cpp\
         src/mainwindow.cpp \

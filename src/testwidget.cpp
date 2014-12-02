@@ -28,7 +28,6 @@ void TestWidget::onGoButtonClicked()
         return;
 
     GifPlayer* player = new GifPlayer();
-    player->play(url);
     m_ui->gifLayout->addWidget(player);
 
     GifLoader::instance()->load(url, player);

@@ -1,18 +1,30 @@
 #ifndef GIFHOUSE_H
 #define GIFHOUSE_H
 
-#include <QWidget>
+#include <QScrollArea>
+#include <QUrl>
 
-class GifHouse : public QWidget
+class GifPlayer;
+class QHBoxLayout;
+class GifHouse : public QScrollArea
 {
     Q_OBJECT
 public:
     explicit GifHouse(QWidget *parent = 0);
 
-signals:
+    void addUrl(const QUrl& url);
+    void clear();
 
-public slots:
+protected:
+    virtual void dragEnterEvent(QDragEnterEvent* e);
+    virtual void dragMoveEvent(QDragMoveEvent *event);
+    virtual void dragLeaveEvent(QDragLeaveEvent *event);
+    virtual void dropEvent(QDropEvent *);
 
+private:
+    QHBoxLayout* m_layout;
+    QList<GifPlayer*> m_players;
+    QList<QUrl> m_urls;
 };
 
 #endif // GIFHOUSE_H
