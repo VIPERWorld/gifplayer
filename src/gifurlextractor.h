@@ -11,17 +11,21 @@ class GifUrlExtractor : public QObject
     Q_OBJECT
     Q_DISABLE_COPY(GifUrlExtractor)
 public:
-    static GifUrlExtractor* instance();
+    explicit GifUrlExtractor(QObject *parent = 0);
     void setUrl(const QUrl& url);
 
+public slots:
+    void start();
+
 signals:
+    void finished();
     void urlsReady(const QList<QString>& urls);
 
 private slots:
     void onPageLoaded(bool load);
 
 private:
-    explicit GifUrlExtractor(QObject *parent = 0);
+    QString extractLink(const QString& rawStr);
 
 private:
     QUrl m_url;

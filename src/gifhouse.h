@@ -1,13 +1,16 @@
 #ifndef GIFHOUSE_H
 #define GIFHOUSE_H
 
-#include <QScrollArea>
+#include <QStackedWidget>
 #include <QUrl>
 
 class GifPlayer;
 class QHBoxLayout;
-class GifHouse : public QScrollArea
+class GifHousePrivate;
+class GifHouse : public QWidget
 {
+    Q_DECLARE_PRIVATE(GifHouse)
+    Q_DISABLE_COPY(GifHouse)
     Q_OBJECT
 public:
     explicit GifHouse(QWidget *parent = 0);
@@ -20,11 +23,17 @@ protected:
     virtual void dragMoveEvent(QDragMoveEvent *event);
     virtual void dragLeaveEvent(QDragLeaveEvent *event);
     virtual void dropEvent(QDropEvent *);
+    virtual QSize sizeHint() const;
+    virtual void resizeEvent(QResizeEvent *);
+
+private slots:
+    void updatePlayer(int index);
+    void onPlayerReleased();
+    bool isValid(const QUrl& url);
 
 private:
-    QHBoxLayout* m_layout;
-    QList<GifPlayer*> m_players;
-    QList<QUrl> m_urls;
+    GifHousePrivate* d_ptr;
+
 };
 
 #endif // GIFHOUSE_H

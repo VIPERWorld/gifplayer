@@ -52,6 +52,7 @@ void GifLoader::load(const QString& url, GifPlayer* player)
     downloader->moveToThread(thread);
     connect(thread, SIGNAL(started()), downloader, SLOT(start()));
     connect(downloader, SIGNAL(downloaded()), this, SLOT(onDownloaded()));
+    connect(downloader, SIGNAL(downloaded()), thread, SLOT(terminate()));
     connect(downloader, SIGNAL(downloaded()), thread, SLOT(deleteLater()));
     thread->start();
 }

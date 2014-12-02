@@ -7,7 +7,7 @@
 
 #include <QProgressIndicator.h>
 
-static const QSize ButtonSize(40,40);
+static const QSize ButtonSize(30,30);
 static const QSize IndicatorSize(60,60);
 class GifPlayerPrivate
 {
@@ -48,6 +48,7 @@ void GifPlayerPrivate::layoutButtons()
         deleteButton->setIconSize(ButtonSize);
         deleteButton->setAutoRaise(true);
         deleteButton->setIcon(QIcon(":/images/delete.png"));
+        q_ptr->connect(deleteButton, SIGNAL(clicked()), q_ptr, SIGNAL(released()));
         q_ptr->connect(deleteButton, SIGNAL(clicked()), q_ptr, SLOT(deleteLater()));
     }
 
@@ -82,9 +83,6 @@ void GifPlayerPrivate::layoutButtons()
 
 void GifPlayerPrivate::layoutPgsIndicator()
 {
-    if (QFile::exists(movie->fileName()))
-        return;
-
     if (!pgsIndicator) {
         pgsIndicator = new QProgressIndicator(q_ptr);
         pgsIndicator->setFixedSize(IndicatorSize);
@@ -111,6 +109,7 @@ GifPlayer::GifPlayer(QWidget *parent) :
     d_ptr = new GifPlayerPrivate;
     d_ptr->q_ptr = this;
     setContentsMargins(0, 0, 0, 0);
+//    d_ptr->layoutPgsIndicator();
 }
 
 GifPlayer::~GifPlayer()
@@ -120,10 +119,8 @@ GifPlayer::~GifPlayer()
 
 void GifPlayer::play(const QString &file)
 {
-    if (QFile::exists(file))
-        d_ptr->deletePgsIndicator();
-    else
-        d_ptr->layoutPgsIndicator();
+//    if (QFile::exists(file))
+//        d_ptr->deletePgsIndicator();
 
     if (d_ptr->movie == nullptr) {
         d_ptr->movie = new QMovie(this);
@@ -188,7 +185,12 @@ void GifPlayer::paintEvent(QPaintEvent *e)
 void GifPlayer::resizeEvent(QResizeEvent *)
 {
     d_ptr->layoutButtons();
-    d_ptr->layoutPgsIndicator();
+
+    if (!d_ptr->movie)
+        d_ptr->layoutPgsIndicator();
+
+//    if (d_ptr->movie)
+//        d_ptr->movie->setScaledSize(size());
 }
 
 void GifPlayer::onMovieStarted()
@@ -201,5 +203,4 @@ void GifPlayer::onMovieStateChanged(QMovie::MovieState state)
 {
     if (state == QMovie::Running)
         d_ptr->deletePgsIndicator();
-
 }

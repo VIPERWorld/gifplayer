@@ -18,6 +18,9 @@ public slots:
     void pause();
     void stop();
 
+signals:
+    void released();
+
 protected:
     virtual void mousePressEvent(QMouseEvent *ev);
     virtual QSize sizeHint() const;

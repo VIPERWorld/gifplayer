@@ -17,7 +17,8 @@ SOURCES += src/main.cpp\
         src/site.cpp \
         src/hahasite.cpp \
         src/gifurlextractor.cpp \
-        src/gifhouse.cpp
+        src/gifhouse.cpp \
+    src/giftheatre.cpp
 
 HEADERS  += src/mainwindow.h \
             src/testwidget.h \
@@ -28,7 +29,8 @@ HEADERS  += src/mainwindow.h \
             src/site.h \
             src/hahasite.h \
             src/gifurlextractor.h \
-            src/gifhouse.h
+            src/gifhouse.h \
+    src/giftheatre.h
 
 FORMS    += ui/mainwindow.ui \
             ui/testwidget.ui
