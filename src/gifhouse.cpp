@@ -73,6 +73,7 @@ void GifHouse::resizeEvent(QResizeEvent *)
 
 void GifHouse::addUrl(const QUrl &url)
 {
+    qDebug() << __FUNCTION__ << url;
     if (!isValid(url) && d_ptr->urls.contains(url))
         return;
 

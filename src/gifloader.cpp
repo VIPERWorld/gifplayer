@@ -6,6 +6,7 @@
 #include <QMap>
 #include <QThread>
 #include <QUrl>
+#include <QFile>
 
 class GifLoaderPrivate
 {
@@ -38,6 +39,15 @@ void GifLoader::load(const QString& url, GifPlayer* player)
 
     player->setToolTip(url);
     d_ptr->urlPlayerMap.insert(url, player);
+
+    int len = url.lastIndexOf('/');
+    QString fileName = url.mid(len, url.length() - len);
+    QString fullPath = QString("%1%2").arg(Utils::gifSaveDir()).arg(fileName);
+    qDebug() << "full path: " << fullPath;
+    if (QFile::exists(fullPath)) {
+        player->play(fullPath);
+        return;
+    }
 
     QUrl url_;
     url_.setUrl(url);
